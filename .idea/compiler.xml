@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="genderclassify" />
+        <module name="twitter-user-gender-classification" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="genderclassify" target="1.8" />
+      <module name="twitter-user-gender-classification" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
