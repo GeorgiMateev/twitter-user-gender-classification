@@ -20,48 +20,15 @@ import java.util.stream.Collectors;
  * Created by Miroslav Kramolinski
  */
 public class CsvReader {
-    private enum Headers {
-        USER_ID("_unit_id"),
-        GOLDEN("_golden"),
-        UNIT_STATE("_unit_state"),
-        TRUSTED_JUDGEMENTS("_trusted_judgments"),
-        LAST_JUDGEMENT_TIME("_last_judgment_at"),
-        GENDER("gender"),
-        GENDER_CONFIDENCE("gender:confidence"),
-        PROFILE_EXISTS("profile_yn"),
-        PROFILE_EXISTS_CONFIDENCE("profile_yn:confidence"),
-        PROFILE_CREATION_DATE("created"),
-        PROFILE_DESCRIPTION("description"),
-        FAVORITES_NUMBER("fav_number"),
-        GENDER_GOLDEN("gender_gold"),
-        LINK_COLOR("link_color"),
-        USERNAME("name"),
-        PROFILE_YN_VALUE_GOLDEN("profile_yn_gold"),
-        PROFILE_IMAGE_LINK("profileimage"),
-        RETWEET_COUNT("retweet_count"),
-        SIDEBAR_COLOR("sidebar_color"),
-        TWEET_TEXT("text"),
-        TWEET_COORDINATES("tweet_coord"),
-        TWEETS_COUNT("tweet_count"),
-        TWEET_CREATION_DATE("tweet_created"),
-        TWEET_ID("tweet_id"),
-        TWEET_LOCATION("tweet_location"),
-        USER_TIMEZONE("user_timezone");
-
-        private String headerName;
-
-        Headers(String headerName) {
-            this.headerName = headerName;
-        }
-
-        public String getHeaderName() {
-            return headerName;
-        }
-    }
-
     private static String TRAIN_DATA_FILE = "src\\main\\resources\\train\\gender-classifier-DFE-791531.csv";
 
-    public static List<Observation> readObservations() {
+    private Map<String, Set<Object>> dataDomain;
+
+    public CsvReader() {
+        dataDomain = new HashMap<>();
+    }
+
+    public Pair<List<Observation>, Map<String, Set<Object>>> readObservations() {
         List<Observation> observations = new ArrayList<>();
         Integer skipped = 0;
 
@@ -92,22 +59,88 @@ public class CsvReader {
         }
 
         System.out.print("Observations read: " + observations.size() + ", observations skipped: " + skipped);
-        return observations;
+        return new Pair(observations, dataDomain);
     }
 
-    private static Observation parseLine(String[] line, Map<String, Integer> headerMap) {
+    private Observation parseLine(String[] line, Map<String, Integer> headerMap) {
         TwitterProfile profile = new TwitterProfile()
-                .desciption(line[headerMap.get(Headers.PROFILE_DESCRIPTION.getHeaderName())])
-                .sidebarColor(line[headerMap.get(Headers.SIDEBAR_COLOR.getHeaderName())])
-                .linkColor(line[headerMap.get(Headers.LINK_COLOR.getHeaderName())])
-                .profileImageLink(line[headerMap.get(Headers.PROFILE_IMAGE_LINK.getHeaderName())])
-                .profileExists(getBoolean(line[headerMap.get(Headers.PROFILE_EXISTS.getHeaderName())]))
-                .profileExistsConfidence(getDouble(line[headerMap.get(Headers.PROFILE_EXISTS_CONFIDENCE.getHeaderName())]))
-                .created(getDate(line[headerMap.get(Headers.PROFILE_CREATION_DATE.getHeaderName())]))
-                .genderGold(line[headerMap.get(Headers.GENDER_GOLDEN.getHeaderName())])
-                .profileYnGolden(getBoolean(line[headerMap.get(Headers.PROFILE_YN_VALUE_GOLDEN.getHeaderName())]));
+                .desciption(extractString(line, headerMap, Fields.PROFILE_DESCRIPTION))
+                .sidebarColor(extractString(line, headerMap, Fields.SIDEBAR_COLOR))
+                .linkColor(extractString(line, headerMap, Fields.LINK_COLOR))
+                .profileImageLink(extractString(line, headerMap, Fields.PROFILE_IMAGE_LINK))
+                .profileExists(extractBoolean(line, headerMap, Fields.PROFILE_EXISTS))
+                .profileExistsConfidence(extractDouble(line, headerMap, Fields.PROFILE_EXISTS_CONFIDENCE))
+                .created(extractDate(line, headerMap, Fields.PROFILE_CREATION_DATE))
+                .genderGold(extractString(line, headerMap, Fields.GENDER_GOLDEN))
+                .profileYnGolden(extractBoolean(line, headerMap, Fields.PROFILE_YN_VALUE_GOLDEN));
 
-        String coordinates = line[headerMap.get(Headers.TWEET_COORDINATES.getHeaderName())];
+        return new Observation()
+                .observationState(extractString(line, headerMap, Fields.UNIT_STATE))
+                .user(new TwitterUser()
+                        .id(extractLong(line, headerMap, Fields.USER_ID))
+                        .username(extractString(line, headerMap, Fields.USERNAME))
+                        .numberOfRetweets(extractInteger(line, headerMap, Fields.RETWEET_COUNT))
+                        .numberOfFavorites(extractInteger(line, headerMap, Fields.FAVORITES_NUMBER))
+                        .tweetCount(extractInteger(line, headerMap, Fields.TWEETS_COUNT))
+                        .golden(extractBoolean(line, headerMap, Fields.GOLDEN))
+                        .trustedJudgements(extractInteger(line, headerMap, Fields.TRUSTED_JUDGEMENTS))
+                        .lastJudgement(extractDate(line, headerMap, Fields.LAST_JUDGEMENT_TIME))
+                        .gender(extractString(line, headerMap, Fields.GENDER))
+                        .genderConfidence(extractDouble(line, headerMap, Fields.GENDER_CONFIDENCE))
+                        .timezone(extractString(line, headerMap, Fields.USER_TIMEZONE))
+                        .profile(profile))
+                .tweet(new Tweet()
+                        .id(extractString(line, headerMap, Fields.TWEET_ID))
+                        .text(extractString(line, headerMap, Fields.TWEET_TEXT))
+                        .creationDate(extractDate(line, headerMap, Fields.TWEET_CREATION_DATE))
+                        .coordinates(extractCoordinates(line, headerMap, Fields.TWEET_COORDINATES))
+                        .location(extractString(line, headerMap, Fields.TWEET_LOCATION)));
+    }
+
+    private String extractString(String[] line, Map<String, Integer> headerMap, Fields field) {
+        String value = line[headerMap.get(field.getHeaderName())];
+        addToDomain(field, value);
+
+        return value;
+    }
+
+    private Long extractLong(String[] line, Map<String, Integer> headerMap, Fields field) {
+        Long value = Long.parseLong(line[headerMap.get(field.getHeaderName())]);
+        addToDomain(field, value);
+
+        return value;
+    }
+
+    private Boolean extractBoolean(String[] line, Map<String, Integer> headerMap, Fields field) {
+        Boolean value = getBoolean(line[headerMap.get(field.getHeaderName())]);
+        addToDomain(field, value);
+
+        return value;
+    }
+
+    private Integer extractInteger(String[] line, Map<String, Integer> headerMap, Fields field) {
+        Integer value = getInteger(line[headerMap.get(field.getHeaderName())]);
+        addToDomain(field, value);
+
+        return value;
+    }
+
+    private Double extractDouble(String[] line, Map<String, Integer> headerMap, Fields field) {
+        Double value = getDouble(line[headerMap.get(field.getHeaderName())]);
+        addToDomain(field, value);
+
+        return value;
+    }
+
+    private Date extractDate(String[] line, Map<String, Integer> headerMap, Fields field) {
+        Date value = getDate(line[headerMap.get(field.getHeaderName())]);
+        addToDomain(field, value);
+
+        return value;
+    }
+
+    private Pair<Double, Double> extractCoordinates(String[] line, Map<String, Integer> headerMap, Fields field) {
+        String coordinates = line[headerMap.get(field.getHeaderName())];
         String lat = null;
         String lon = null;
 
@@ -119,27 +152,17 @@ public class CsvReader {
             lon = lon.substring(0, lon.length() - 1);
         }
 
-        return new Observation()
-                .observationState(line[headerMap.get(Headers.UNIT_STATE.getHeaderName())])
-                .user(new TwitterUser()
-                        .id(Long.parseLong(line[headerMap.get(Headers.USER_ID.getHeaderName())]))
-                        .username(line[headerMap.get(Headers.USERNAME.getHeaderName())])
-                        .numberOfRetweets(getInteger(line[headerMap.get(Headers.RETWEET_COUNT.getHeaderName())]))
-                        .numberOfFavorites(getInteger(line[headerMap.get(Headers.FAVORITES_NUMBER.getHeaderName())]))
-                        .tweetCount(getInteger(line[headerMap.get(Headers.TWEETS_COUNT.getHeaderName())]))
-                        .golden(getBoolean(line[headerMap.get(Headers.GOLDEN.getHeaderName())]))
-                        .trustedJudgements(getInteger(line[headerMap.get(Headers.TRUSTED_JUDGEMENTS.getHeaderName())]))
-                        .lastJudgement(getDate(line[headerMap.get(Headers.LAST_JUDGEMENT_TIME.getHeaderName())]))
-                        .gender(line[headerMap.get(Headers.GENDER.getHeaderName())])
-                        .genderConfidence(getDouble(line[headerMap.get(Headers.GENDER_CONFIDENCE.getHeaderName())]))
-                        .timezone(line[headerMap.get(Headers.USER_TIMEZONE.getHeaderName())])
-                        .profile(profile))
-                .tweet(new Tweet()
-                        .id(line[headerMap.get(Headers.TWEET_ID.getHeaderName())])
-                        .text(line[headerMap.get(Headers.TWEET_TEXT.getHeaderName())])
-                        .creationDate(getDate(line[headerMap.get(Headers.TWEET_CREATION_DATE.getHeaderName())]))
-                        .coordinates(lat == null? null: new Pair<>(getDouble(lat), getDouble(lon)))
-                        .location(line[headerMap.get(Headers.TWEET_LOCATION.getHeaderName())]));
+        Pair<Double, Double> value = lat == null? null: new Pair<>(getDouble(lat), getDouble(lon));
+        addToDomain(field, value);
+
+        return value;
+    }
+
+    private void addToDomain(Fields field, Object value) {
+        if(dataDomain.get(field.name()) == null)
+            dataDomain.put(field.name(), new HashSet<>());
+
+        dataDomain.get(field.name()).add(value);
     }
 
     private static Boolean getBoolean(String str) {
@@ -177,7 +200,7 @@ public class CsvReader {
     // in their text and hence we can't just use the lines from the file and split them by the comma character
     private static List<List<String>> readRows(List<String> lines) throws IOException {
         List<List<String>> rows = new ArrayList<>();
-        int columnsPerRow = Headers.values().length;
+        int columnsPerRow = Fields.values().length;
 
 
         List<String> row = new ArrayList<>();
