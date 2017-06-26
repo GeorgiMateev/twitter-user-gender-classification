@@ -104,3 +104,4 @@ ENV/
 /.idea/workspace.xml
 /notebooks/models/
 /notebooks/train-data/
+/notebooks/runs/
