@@ -2,17 +2,9 @@ package edu.fmi.genderclassify.weka.features;
 
 import edu.fmi.genderclassify.dataimport.Fields;
 import edu.fmi.genderclassify.utils.Conversion;
-import javafx.util.Pair;
-import org.w3c.dom.Attr;
 import weka.core.Attribute;
 
-import javax.smartcardio.ATR;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Miroslav Kramolinski
@@ -25,7 +17,7 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getUserId() {
-        return new Attribute(Fields.USER_ID.name());
+        return getNumericAttribute(Fields.USER_ID);
     }
 
     public Attribute getGolden() {
@@ -37,11 +29,11 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getTrustedJudgements() {
-        return new Attribute(Fields.TRUSTED_JUDGEMENTS.name());
+        return getNumericAttribute(Fields.TRUSTED_JUDGEMENTS);
     }
 
     public Attribute getLastJudgementTime() {
-        return getDateAttribute(Fields.LAST_JUDGEMENT_TIME);
+        return getStringAttribute(Fields.LAST_JUDGEMENT_TIME);
     }
 
     public Attribute getGender() {
@@ -49,7 +41,7 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getGenderConfidence() {
-        return new Attribute(Fields.GENDER_CONFIDENCE.name());
+        return getNumericAttribute(Fields.GENDER_CONFIDENCE);
     }
 
     public Attribute getProfileExists() {
@@ -57,19 +49,19 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getProfileExistsConfidence() {
-        return new Attribute(Fields.PROFILE_EXISTS_CONFIDENCE.name());
+        return getNumericAttribute(Fields.PROFILE_EXISTS_CONFIDENCE);
     }
 
     public Attribute getProfileCreationDate() {
-        return getDateAttribute(Fields.PROFILE_CREATION_DATE);
+        return getStringAttribute(Fields.PROFILE_CREATION_DATE);
     }
 
     public Attribute getDescription() {
-        return new Attribute(Fields.PROFILE_DESCRIPTION.name());
+        return getStringAttribute(Fields.PROFILE_DESCRIPTION);
     }
 
     public Attribute getFavoritesNumber() {
-        return new Attribute(Fields.FAVORITES_NUMBER.name());
+        return getNumericAttribute(Fields.FAVORITES_NUMBER);
     }
 
     public Attribute getGenderGold() {
@@ -77,11 +69,11 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getLinkColor() {
-        return new Attribute(Fields.LINK_COLOR.name());
+        return getStringAttribute(Fields.LINK_COLOR);
     }
 
     public Attribute getUserName() {
-        return new Attribute(Fields.USERNAME.name());
+        return getStringAttribute(Fields.USERNAME);
     }
 
     public Attribute getProfileYnGolden() {
@@ -89,19 +81,19 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getProfileImageLink() {
-        return new Attribute(Fields.PROFILE_IMAGE_LINK.name());
+        return getStringAttribute(Fields.PROFILE_IMAGE_LINK);
     }
 
     public Attribute getRetweetsCount() {
-        return new Attribute(Fields.RETWEET_COUNT.name());
+        return getNumericAttribute(Fields.RETWEET_COUNT);
     }
 
     public Attribute getSidebarColor() {
-        return new Attribute(Fields.SIDEBAR_COLOR.name());
+        return getStringAttribute(Fields.SIDEBAR_COLOR);
     }
 
     public Attribute getText() {
-        return new Attribute(Fields.TWEET_TEXT.name());
+        return getStringAttribute(Fields.TWEET_TEXT);
     }
 
     public Attribute getTweetLatitude() {
@@ -113,43 +105,38 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getTweetsCount() {
-        return new Attribute(Fields.TWEETS_COUNT.name());
+        return getNumericAttribute(Fields.TWEETS_COUNT);
     }
 
     public Attribute getTweetCreationDate() {
-        return getDateAttribute(Fields.TWEET_CREATION_DATE);
+        return getStringAttribute(Fields.TWEET_CREATION_DATE);
     }
 
     public Attribute getTweetId() {
-        return new Attribute(Fields.TWEET_ID.name());
+        return getStringAttribute(Fields.TWEET_ID);
     }
 
     public Attribute getTweetLocation() {
-        return new Attribute(Fields.TWEET_LOCATION.name());
+        return getStringAttribute(Fields.TWEET_LOCATION);
     }
 
     public Attribute getUserTimezone() {
-        return new Attribute(Fields.USER_TIMEZONE.name());
-    }
-
-    private Attribute getDateAttribute(Fields field) {
-        Set<String> dates = new HashSet<>();
-        for(Object obj: dataDomain.get(field.name()))
-            dates.add(Conversion.getValueAsStr(obj));
-
-        Attribute att = new Attribute(field.name());
-        for(String element: dates) {
-            att.addStringValue(element);
-        }
-
-        return att;
+        return getStringAttribute(Fields.USER_TIMEZONE);
     }
 
     private Attribute getNominalAttribute(Fields field) {
-        Attribute att = new Attribute(field.name());
+        Set<String> values = new HashSet<>();
         for(Object obj: dataDomain.get(field.name()))
-            att.addStringValue(Conversion.getValueAsStr(obj));
+            values.add(Conversion.getValueAsStr(obj));
 
-        return att;
+        return new Attribute(field.name(), new ArrayList<>(values));
+    }
+
+    private Attribute getNumericAttribute(Fields field) {
+        return new Attribute(field.name());
+    }
+
+    private Attribute getStringAttribute(Fields field) {
+        return new Attribute(field.name(), true);
     }
 }

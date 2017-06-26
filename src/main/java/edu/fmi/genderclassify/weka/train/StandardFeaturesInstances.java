@@ -31,7 +31,7 @@ public class StandardFeaturesInstances {
 
             for (Pair<String, Attribute> attributePair : attributesList) {
                 if (attributePair.getKey().equalsIgnoreCase(Fields.USER_ID.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getId());
+                    instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getId()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.GOLDEN.name()))
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getUser().getGolden()));
@@ -40,7 +40,7 @@ public class StandardFeaturesInstances {
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getObservationState()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.TRUSTED_JUDGEMENTS.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getTrustedJudgements());
+                    instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getTrustedJudgements()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.LAST_JUDGEMENT_TIME.name()))
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getUser().getLastJudgement()));
@@ -49,13 +49,13 @@ public class StandardFeaturesInstances {
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getUser().getGender()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.GENDER_CONFIDENCE.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getGenderConfidence());
+                    instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getGenderConfidence()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.PROFILE_EXISTS.name()))
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getUser().getProfile().getProfileExists()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.PROFILE_EXISTS_CONFIDENCE.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getProfile().getProfileExistsConfidence());
+                    instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getProfile().getProfileExistsConfidence()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.PROFILE_CREATION_DATE.name()))
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getUser().getProfile().getCreated()));
@@ -64,7 +64,7 @@ public class StandardFeaturesInstances {
                     instance.setValue(attributePair.getValue(), observation.getUser().getProfile().getDescription());
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.FAVORITES_NUMBER.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getNumberOfFavorites());
+                    instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getNumberOfFavorites()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.GENDER_GOLDEN.name()))
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getUser().getProfile().getGenderGold()));
@@ -82,7 +82,7 @@ public class StandardFeaturesInstances {
                     instance.setValue(attributePair.getValue(), observation.getUser().getProfile().getProfileImageLink());
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.RETWEET_COUNT.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getNumberOfRetweets());
+                    instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getNumberOfRetweets()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.SIDEBAR_COLOR.name()))
                     instance.setValue(attributePair.getValue(), observation.getUser().getProfile().getSidebarColor());
@@ -90,14 +90,22 @@ public class StandardFeaturesInstances {
                 if(attributePair.getKey().equalsIgnoreCase(Fields.TWEET_TEXT.name()))
                     instance.setValue(attributePair.getValue(), observation.getTweet().getText());
 
-                if(attributePair.getKey().equalsIgnoreCase(Fields.TWEET_COORDINATES.name() + "_LATITUDE"))
-                    instance.setValue(attributePair.getValue(), observation.getTweet().getCoordinates().getKey());
+                if(attributePair.getKey().equalsIgnoreCase(Fields.TWEET_COORDINATES.name() + "_LATITUDE")) {
+                    if(observation.getTweet().getCoordinates() != null)
+                        instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getTweet().getCoordinates().getKey()));
+                    else
+                        instance.setValue(attributePair.getValue(), 0);
+                }
 
-                if(attributePair.getKey().equalsIgnoreCase(Fields.TWEET_COORDINATES.name() + "_LONGITUDE"))
-                    instance.setValue(attributePair.getValue(), observation.getTweet().getCoordinates().getValue());
+                if(attributePair.getKey().equalsIgnoreCase(Fields.TWEET_COORDINATES.name() + "_LONGITUDE")) {
+                    if(observation.getTweet().getCoordinates() != null)
+                        instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getTweet().getCoordinates().getValue()));
+                    else
+                        instance.setValue(attributePair.getValue(), 0);
+                }
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.TWEETS_COUNT.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getTweetCount());
+                    instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getTweetCount()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.TWEET_CREATION_DATE.name()))
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getTweet().getCreationDate()));
@@ -114,6 +122,8 @@ public class StandardFeaturesInstances {
 
             trainingSet.add(instance);
         }
+
+        trainingSet.setClassIndex(attributesList.size() - 1);
 
         return trainingSet;
     }

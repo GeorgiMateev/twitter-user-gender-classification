@@ -9,7 +9,7 @@ import java.util.Date;
 public class Conversion {
     public static String getValueAsStr(Object obj) {
         if(obj == null)
-            return null;
+            return "";
 
         if(obj instanceof String)
             return (String) obj;
@@ -30,5 +30,17 @@ public class Conversion {
             return new SimpleDateFormat("yyyMMdd").format((Date) obj);
 
         return null;
+    }
+
+    public static double getDoubleValue(Double d) {
+        return d == null? 0: d.doubleValue();
+    }
+
+    public static double getDoubleValue(Long l) {
+        return l == null? 0: l.doubleValue();
+    }
+
+    public static double getDoubleValue(Integer i) {
+        return i == null? 0: i.doubleValue();
     }
 }

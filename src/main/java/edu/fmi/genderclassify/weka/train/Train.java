@@ -1,6 +1,7 @@
 package edu.fmi.genderclassify.weka.train;
 
 import weka.classifiers.Classifier;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
 
@@ -19,6 +20,13 @@ public class Train {
 
     public Classifier getJ48Model(Instances instances) throws Exception {
         Classifier model = new J48();
+        model.buildClassifier(instances);
+
+        return model;
+    }
+
+    public Classifier getNaiveBayes(Instances instances) throws Exception {
+        Classifier model = new NaiveBayes();
         model.buildClassifier(instances);
 
         return model;

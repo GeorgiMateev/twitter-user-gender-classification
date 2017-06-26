@@ -58,7 +58,7 @@ public class CsvReader {
             e.printStackTrace();
         }
 
-        System.out.print("Observations read: " + observations.size() + ", observations skipped: " + skipped);
+        System.out.println("Observations read: " + observations.size() + ", observations skipped: " + skipped);
         return new Pair(observations, dataDomain);
     }
 
