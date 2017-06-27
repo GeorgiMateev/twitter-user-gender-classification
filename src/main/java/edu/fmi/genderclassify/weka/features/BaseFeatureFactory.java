@@ -8,6 +8,8 @@ import java.util.*;
 
 /**
  * Created by Miroslav Kramolinski
+ *
+ * A factory for creating Attribute instances for the input (base) features
  */
 public class BaseFeatureFactory {
     private Map<String, Set<Object>> dataDomain;

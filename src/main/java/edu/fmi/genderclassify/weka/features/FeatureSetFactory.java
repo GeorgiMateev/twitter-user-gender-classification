@@ -11,6 +11,8 @@ import java.util.Set;
 
 /**
  * Created by Miroslav Kramolinski
+ *
+ * This factory is used to supply a set of features, that would be then used in the feature vector
  */
 public class FeatureSetFactory {
     public static List<Pair<String, Attribute>> getStandardFeatureSet(Map<String, Set<Object>> dataDomain) {
