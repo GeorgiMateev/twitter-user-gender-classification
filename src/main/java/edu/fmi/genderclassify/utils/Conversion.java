@@ -43,4 +43,41 @@ public class Conversion {
     public static double getDoubleValue(Integer i) {
         return i == null? 0: i.doubleValue();
     }
+
+    public static String getHexColorAsNominal(String hexColor) {
+        String pattern = "[\\w|\\d]+";
+        if (!hexColor.matches(pattern)) {
+            return "FFFFFF";
+        }
+
+        int borderOne = 85;
+        int borderTwo = 170;
+        int borderThree = 255;
+
+        int color = (int)Long.parseLong(hexColor, 16);
+        int R = (color >> 16) & 0xFF;
+        int G = (color >> 8) & 0xFF;
+        int B = (color >> 0) & 0xFF;
+
+        int nominalR = 0;
+        if (R <= borderOne) nominalR = borderOne;
+        else if (R > borderOne && R <= borderTwo) nominalR = borderTwo;
+        else if (R > borderTwo && R <= borderThree) nominalR = borderThree;
+
+        int nominalG = 0;
+        if (G <= borderOne) nominalG = borderOne;
+        else if (G > borderOne && G <= borderTwo) nominalG = borderTwo;
+        else if (G > borderTwo && G <= borderThree) nominalG = borderThree;
+
+        int nominalB = 0;
+        if (B <= borderOne) nominalB = borderOne;
+        else if (B > borderOne && B < borderTwo) nominalB = borderTwo;
+        else if (B > borderTwo && B <= borderThree) nominalB = borderThree;
+
+        String result = Integer.toHexString( nominalR ) +
+                Integer.toHexString( nominalG ) +
+                Integer.toHexString( nominalB );
+
+        return result;
+    }
 }

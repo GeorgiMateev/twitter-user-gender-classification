@@ -71,7 +71,7 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getLinkColor() {
-        return getStringAttribute(Fields.LINK_COLOR);
+        return getNominalColorAttribute(Fields.LINK_COLOR);
     }
 
     public Attribute getUserName() {
@@ -91,7 +91,7 @@ public class BaseFeatureFactory {
     }
 
     public Attribute getSidebarColor() {
-        return getStringAttribute(Fields.SIDEBAR_COLOR);
+        return getNominalColorAttribute(Fields.SIDEBAR_COLOR);
     }
 
     public Attribute getText() {
@@ -130,6 +130,14 @@ public class BaseFeatureFactory {
         Set<String> values = new HashSet<>();
         for(Object obj: dataDomain.get(field.name()))
             values.add(Conversion.getValueAsStr(obj));
+
+        return new Attribute(field.name(), new ArrayList<>(values));
+    }
+
+    private Attribute getNominalColorAttribute(Fields field) {
+        Set<String> values = new HashSet<>();
+        for(Object obj: dataDomain.get(field.name()))
+            values.add(Conversion.getHexColorAsNominal(obj.toString()));
 
         return new Attribute(field.name(), new ArrayList<>(values));
     }

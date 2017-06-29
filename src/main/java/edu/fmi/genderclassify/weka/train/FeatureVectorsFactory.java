@@ -72,7 +72,7 @@ public class FeatureVectorsFactory {
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getUser().getProfile().getGenderGold()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.LINK_COLOR.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getProfile().getLinkColor());
+                    instance.setValue(attributePair.getValue(), Conversion.getHexColorAsNominal(observation.getUser().getProfile().getLinkColor()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.USERNAME.name()))
                     instance.setValue(attributePair.getValue(), observation.getUser().getUsername());
@@ -87,7 +87,7 @@ public class FeatureVectorsFactory {
                     instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getNumberOfRetweets()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.SIDEBAR_COLOR.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getProfile().getSidebarColor());
+                    instance.setValue(attributePair.getValue(), Conversion.getHexColorAsNominal(observation.getUser().getProfile().getSidebarColor()));
 
                 if(attributePair.getKey().equalsIgnoreCase(Fields.TWEET_TEXT.name()))
                     instance.setValue(attributePair.getValue(), observation.getTweet().getText());
@@ -191,7 +191,7 @@ public class FeatureVectorsFactory {
                     instance.setValue(attributePair.getValue(), Conversion.getValueAsStr(observation.getUser().getProfile().getGenderGold()));
 
                 if (attributePair.getKey().equalsIgnoreCase(Fields.LINK_COLOR.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getProfile().getLinkColor());
+                    instance.setValue(attributePair.getValue(), Conversion.getHexColorAsNominal(observation.getUser().getProfile().getLinkColor()));
 
                 if (attributePair.getKey().equalsIgnoreCase(Fields.USERNAME.name()))
                     instance.setValue(attributePair.getValue(), observation.getUser().getUsername());
@@ -206,7 +206,7 @@ public class FeatureVectorsFactory {
                     instance.setValue(attributePair.getValue(), Conversion.getDoubleValue(observation.getUser().getNumberOfRetweets()));
 
                 if (attributePair.getKey().equalsIgnoreCase(Fields.SIDEBAR_COLOR.name()))
-                    instance.setValue(attributePair.getValue(), observation.getUser().getProfile().getSidebarColor());
+                    instance.setValue(attributePair.getValue(), Conversion.getHexColorAsNominal(observation.getUser().getProfile().getSidebarColor()));
 
                 if (attributePair.getKey().equalsIgnoreCase(Fields.TWEET_TEXT.name()))
                     instance.setValue(attributePair.getValue(), observation.getTweet().getText());
