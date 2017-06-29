@@ -2,6 +2,7 @@ package edu.fmi.genderclassify.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Miroslav Kramolinski
@@ -79,5 +80,13 @@ public class Conversion {
                 Integer.toHexString( nominalB );
 
         return result;
+    }
+
+    public static Double getMinMaxNormalizedValue(Double value, List<Double> allValues) {
+        if(value == null || value.isNaN() || allValues == null || allValues.isEmpty())
+            return null;
+
+        return (value - allValues.stream().min(Double::compareTo).get())
+                / (allValues.stream().max(Double::compareTo).get() - allValues.stream().min(Double::compareTo).get());
     }
 }

@@ -10,11 +10,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Miroslav Kramolinski
  */
 public class NameTools {
+    private static Map<String, String> namesCache; // attempt at reducing HTTP requests
     /**
      *
      * @param name should be a first name, which the gender should be determined for
@@ -22,6 +25,12 @@ public class NameTools {
      *         is not found as a valid first name and "unisex" is when the name is classified as both male and female
      */
     public static String checkGenderFromRestnames(String name) {
+        if(namesCache == null)
+            namesCache = new HashMap<>();
+
+        if(namesCache.containsKey(name))
+            return namesCache.get(name);
+
         InputStream input = null;
         try {
             input = new URL("http://www.thomas-bayer.com/restnames/name.groovy?name=" + name).openStream();

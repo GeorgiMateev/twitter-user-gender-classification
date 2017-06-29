@@ -19,7 +19,6 @@ public class FeatureSetFactory {
         BaseFeatureFactory factory = new BaseFeatureFactory(dataDomain);
         List<Pair<String, Attribute>> featureVector = new ArrayList<>();
 
-        featureVector.add(new Pair(Fields.USER_ID.name(), factory.getUserId()));
         featureVector.add(new Pair(Fields.GOLDEN.name(), factory.getGolden()));
         featureVector.add(new Pair(Fields.UNIT_STATE.name(), factory.getUnitState()));
         featureVector.add(new Pair(Fields.TRUSTED_JUDGEMENTS.name(), factory.getTrustedJudgements()));
@@ -33,16 +32,12 @@ public class FeatureSetFactory {
         featureVector.add(new Pair(Fields.GENDER_GOLDEN.name(), factory.getGenderGold()));
         featureVector.add(new Pair(Fields.LINK_COLOR.name(), factory.getLinkColor()));
         featureVector.add(new Pair(Fields.USERNAME.name(), factory.getUserName()));
-        featureVector.add(new Pair(Fields.PROFILE_YN_VALUE_GOLDEN.name(), factory.getProfileYnGolden()));
-        featureVector.add(new Pair(Fields.PROFILE_IMAGE_LINK.name(), factory.getProfileImageLink()));
         featureVector.add(new Pair(Fields.RETWEET_COUNT.name(), factory.getRetweetsCount()));
         featureVector.add(new Pair(Fields.SIDEBAR_COLOR.name(), factory.getSidebarColor()));
         featureVector.add(new Pair(Fields.TWEET_TEXT.name(), factory.getText()));
         featureVector.add(new Pair(Fields.TWEET_COORDINATES.name() + "_LATITUDE", factory.getTweetLatitude()));
         featureVector.add(new Pair(Fields.TWEET_COORDINATES.name() + "_LONGITUDE", factory.getTweetLongitude()));
         featureVector.add(new Pair(Fields.TWEETS_COUNT.name(), factory.getTweetsCount()));
-        featureVector.add(new Pair(Fields.TWEET_CREATION_DATE.name(), factory.getTweetCreationDate()));
-        featureVector.add(new Pair(Fields.TWEET_ID.name(), factory.getTweetId()));
         featureVector.add(new Pair(Fields.TWEET_LOCATION.name(), factory.getTweetLocation()));
         featureVector.add(new Pair(Fields.USER_TIMEZONE.name(), factory.getUserTimezone()));
 

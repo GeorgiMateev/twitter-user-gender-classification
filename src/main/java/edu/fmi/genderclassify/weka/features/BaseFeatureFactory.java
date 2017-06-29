@@ -11,6 +11,7 @@ import java.util.*;
  *
  * A factory for creating Attribute instances for the input (base) features
  */
+@SuppressWarnings("unused")
 public class BaseFeatureFactory {
     private Map<String, Set<Object>> dataDomain;
 

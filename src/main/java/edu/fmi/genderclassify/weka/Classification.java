@@ -24,7 +24,7 @@ import java.util.Set;
 public class Classification {
     public static void runJ48(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
         System.out.println("#####################  J48  #####################");
-        Instances instances = FeatureVectorsFactory.getStandardNonStringInstances(
+        Instances instances = FeatureVectorsFactory.getStandardInstances(
                 FeatureSetFactory.getStandardFeatureSet(dataDomain),
                 observations);
 
@@ -58,7 +58,7 @@ public class Classification {
     public static void runNaiveBayes(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
         System.out.println("#####################  NAIVE BAYES  #####################");
 
-        Instances instances = FeatureVectorsFactory.getStandardNonStringInstances(
+        Instances instances = FeatureVectorsFactory.getStandardInstances(
                 FeatureSetFactory.getStandardFeatureSet(dataDomain),
                 observations);
 
@@ -92,7 +92,7 @@ public class Classification {
     public static void runSMO(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
         System.out.println("#####################  SMO (SVM)  #####################");
 
-        Instances instances = FeatureVectorsFactory.getStandardNonStringInstances(
+        Instances instances = FeatureVectorsFactory.getStandardInstances(
                 FeatureSetFactory.getStandardFeatureSet(dataDomain),
                 observations);
 
