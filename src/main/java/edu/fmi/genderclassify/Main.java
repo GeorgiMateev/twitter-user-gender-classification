@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by Miroslav Kramolinski
- */
 public class Main {
     public static void main(String[] args) {
         /*
@@ -27,6 +24,6 @@ public class Main {
          */
         Classification.runJ48(dataDomain, observations);
         Classification.runNaiveBayes(dataDomain, observations);
-        Classification.runSMO(dataDomain, observations);
+//        Classification.runSMO(dataDomain, observations);
     }
 }

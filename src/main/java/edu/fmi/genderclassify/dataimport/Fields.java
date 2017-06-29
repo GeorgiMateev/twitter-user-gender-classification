@@ -1,8 +1,5 @@
 package edu.fmi.genderclassify.dataimport;
 
-/**
- * Created by Miroslav Kramolinski
- */
 public enum Fields {
     USER_ID("_unit_id"),
     GOLDEN("_golden"),

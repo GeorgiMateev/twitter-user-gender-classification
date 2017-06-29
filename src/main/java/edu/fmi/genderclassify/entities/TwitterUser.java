@@ -2,9 +2,6 @@ package edu.fmi.genderclassify.entities;
 
 import java.util.Date;
 
-/**
- * Created by Miroslav Kramolinski
- */
 public class TwitterUser {
     private Long id;                            // a unique id for user
     private String username;                    // the user's name

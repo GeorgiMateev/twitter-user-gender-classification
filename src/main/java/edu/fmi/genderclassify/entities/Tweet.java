@@ -4,9 +4,6 @@ import javafx.util.Pair;
 
 import java.util.Date;
 
-/**
- * Created by Miroslav Kramolinski
- */
 public class Tweet {
     private String id;                              // tweet ID
     private String text;                            // the text content of the tweet

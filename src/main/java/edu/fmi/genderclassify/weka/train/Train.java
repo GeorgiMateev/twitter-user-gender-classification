@@ -8,8 +8,6 @@ import weka.classifiers.trees.J48;
 import weka.core.Instances;
 
 /**
- * Created by Miroslav Kramolinski
- *
  * A supplier of classifiers/models
  */
 public class Train {

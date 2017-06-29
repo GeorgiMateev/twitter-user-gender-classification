@@ -16,9 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Miroslav Kramolinski
- */
 public class CsvReader {
     private static String TRAIN_DATA_FILE = "src\\main\\resources\\train\\gender-classifier-DFE-791531.csv";
 

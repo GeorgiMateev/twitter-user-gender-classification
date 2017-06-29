@@ -2,9 +2,6 @@ package edu.fmi.genderclassify.entities;
 
 import java.util.Date;
 
-/**
- * Created by Miroslav Kramolinski
- */
 public class TwitterProfile {
     private String description;                 // the user's profile description
 

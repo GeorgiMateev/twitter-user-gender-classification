@@ -1,15 +1,20 @@
 package edu.fmi.genderclassify.utils;
 
+import edu.fmi.genderclassify.dataimport.ExtraFields;
 import edu.fmi.genderclassify.dataimport.Fields;
 import edu.fmi.genderclassify.entities.Observation;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Contains the specific logic for extracting the value from each available field in the system
  */
 public class ValueExtractor {
+    private static Map<String, List<Double>> fieldsValuesCache = new HashMap<>(); // spare some stream operations
+
     public static Double getDoubleValue(String fieldName, List<Observation> observations, int observationId) {
         Observation observation = observations.get(observationId);
 
@@ -18,13 +23,19 @@ public class ValueExtractor {
 
             if(value.doubleValue() == 3d)
                 return 0d;
-            else
-                return Conversion.getMinMaxNormalizedValue(
-                            value,
+            else {
+                if(!fieldsValuesCache.containsKey(fieldName))
+                    fieldsValuesCache.put(
+                            fieldName,
                             observations
-                                .stream()
-                                .map(obs -> new Double(obs.getUser().getTrustedJudgements()))
-                                .collect(Collectors.toList()));
+                                    .stream()
+                                    .map(obs -> new Double(obs.getUser().getTrustedJudgements()))
+                                    .collect(Collectors.toList()));
+
+                return Conversion.getMinMaxNormalizedValue(
+                        value,
+                        fieldsValuesCache.get(fieldName));
+            }
         }
 
         if(fieldName.equalsIgnoreCase(Fields.GENDER_CONFIDENCE.name()))
@@ -33,28 +44,71 @@ public class ValueExtractor {
         if(fieldName.equalsIgnoreCase(Fields.PROFILE_EXISTS_CONFIDENCE.name()))
             return Conversion.getDoubleValue(observation.getUser().getProfile().getProfileExistsConfidence());
 
-        if(fieldName.equalsIgnoreCase(Fields.FAVORITES_NUMBER.name()))
+        if(fieldName.equalsIgnoreCase(Fields.FAVORITES_NUMBER.name())) {
             return Conversion.getDoubleValue(observation.getUser().getNumberOfFavorites());
+
+            // Attempts at normalizing this value resulted in failure
+
+            // step normalization
+//            if(!fieldsValuesCache.containsKey(fieldName))
+//                fieldsValuesCache.put(
+//                    fieldName,
+//                        observations
+//                            .stream()
+//                            .map(obs -> new Double(obs.getUser().getNumberOfFavorites()))
+//                            .collect(Collectors.toList()));
+//
+//            return Conversion.getNormalizedToStepsValue(
+//                Conversion.getDoubleValue(observation.getUser().getNumberOfFavorites()),
+//                fieldsValuesCache.get(fieldName),
+//                10);
+
+            // min-max normalization
+//            if(!fieldsValuesCache.containsKey(fieldName))
+//                fieldsValuesCache.put(
+//                    fieldName,
+//                        observations
+//                                .stream()
+//                                .map(obs -> new Double(obs.getUser().getNumberOfFavorites()))
+//                                .collect(Collectors.toList()));
+//
+//            return Conversion.getMinMaxNormalizedValue(
+//                    Conversion.getDoubleValue(observation.getUser().getNumberOfFavorites()),
+//                    fieldsValuesCache.get(fieldName));
+        }
 
         if(fieldName.equalsIgnoreCase(Fields.RETWEET_COUNT.name()))
             return Conversion.getDoubleValue(observation.getUser().getNumberOfRetweets());
 
-        if(fieldName.equalsIgnoreCase(Fields.TWEET_COORDINATES.name() + "_LATITUDE")) {
+        if(fieldName.equalsIgnoreCase(ExtraFields.TWEET_COORDINATES_LATITUDE.name())) {
             if(observation.getTweet().getCoordinates() != null)
                 return Conversion.getDoubleValue(observation.getTweet().getCoordinates().getKey());
             else
                 return 0d;
         }
 
-        if(fieldName.equalsIgnoreCase(Fields.TWEET_COORDINATES.name() + "_LONGITUDE")) {
+        if(fieldName.equalsIgnoreCase(ExtraFields.TWEET_COORDINATES_LONGITUDE.name())) {
             if(observation.getTweet().getCoordinates() != null)
                 return Conversion.getDoubleValue(observation.getTweet().getCoordinates().getValue());
             else
                 return 0d;
         }
 
-        if(fieldName.equalsIgnoreCase(Fields.TWEETS_COUNT.name()))
-            return Conversion.getDoubleValue(observation.getUser().getTweetCount());
+        if(fieldName.equalsIgnoreCase(Fields.TWEETS_COUNT.name())) {
+            if(!fieldsValuesCache.containsKey(fieldName))
+                fieldsValuesCache.put(
+                    fieldName,
+                    observations
+                        .stream()
+                        .map(obs -> new Double(obs.getUser().getTweetCount()))
+                        .collect(Collectors.toList()));
+
+//            return Conversion.getDoubleValue(observation.getUser().getTweetCount());
+            return Conversion.getNormalizedToStepsValue(
+                Conversion.getDoubleValue(observation.getUser().getTweetCount()),
+                fieldsValuesCache.get(fieldName),
+                2000);
+        }
 
         return null;
     }

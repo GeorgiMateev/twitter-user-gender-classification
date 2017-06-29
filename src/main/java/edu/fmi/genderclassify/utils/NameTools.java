@@ -13,9 +13,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Miroslav Kramolinski
- */
 public class NameTools {
     private static Map<String, String> namesCache; // attempt at reducing HTTP requests
     /**

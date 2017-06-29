@@ -7,8 +7,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * Created by Miroslav Kramolinski
- *
  * A test case created by WEKA's documentation
  */
 public class Test {

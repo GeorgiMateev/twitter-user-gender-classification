@@ -4,9 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Miroslav Kramolinski
- */
 public class Conversion {
     public static String getValueAsStr(Object obj) {
         if(obj == null)
@@ -88,5 +85,23 @@ public class Conversion {
 
         return (value - allValues.stream().min(Double::compareTo).get())
                 / (allValues.stream().max(Double::compareTo).get() - allValues.stream().min(Double::compareTo).get());
+    }
+
+    public static Double getNormalizedToStepsValue(Double value, List<Double> allValues, int numberOfSteps) {
+        int min = allValues.stream().min(Double::compareTo).get().intValue();
+        int max = allValues.stream().max(Double::compareTo).get().intValue();
+        int stepSize = (max - min) / numberOfSteps;
+
+        Integer resultStep = null;
+        for(int i = 0; i < numberOfSteps - 1; i ++)
+            if(min + stepSize * i <= value && min + stepSize * (i+1) >= value) {
+                resultStep = i + 1;
+                break;
+            }
+
+        if(resultStep == null)
+            resultStep = numberOfSteps;
+
+        return new Double(resultStep - 1) / new Double(numberOfSteps - 1);
     }
 }

@@ -7,15 +7,13 @@ import weka.core.Attribute;
 import java.util.*;
 
 /**
- * Created by Miroslav Kramolinski
- *
  * A factory for creating Attribute instances for the input (base) features
  */
 @SuppressWarnings("unused")
-public class BaseFeatureFactory {
+public class BaseFeaturesFactory {
     private Map<String, Set<Object>> dataDomain;
 
-    public BaseFeatureFactory(Map<String, Set<Object>> dataDomain) {
+    public BaseFeaturesFactory(Map<String, Set<Object>> dataDomain) {
         this.dataDomain = dataDomain;
     }
 
@@ -97,14 +95,6 @@ public class BaseFeatureFactory {
 
     public Attribute getText() {
         return getStringAttribute(Fields.TWEET_TEXT);
-    }
-
-    public Attribute getTweetLatitude() {
-        return new Attribute(Fields.TWEET_COORDINATES.name() + "_LATITUDE");
-    }
-
-    public Attribute getTweetLongitude() {
-        return new Attribute(Fields.TWEET_COORDINATES.name() + "_LONGITUDE");
     }
 
     public Attribute getTweetsCount() {

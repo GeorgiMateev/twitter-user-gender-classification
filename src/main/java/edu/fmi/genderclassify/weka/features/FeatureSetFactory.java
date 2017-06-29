@@ -1,5 +1,6 @@
 package edu.fmi.genderclassify.weka.features;
 
+import edu.fmi.genderclassify.dataimport.ExtraFields;
 import edu.fmi.genderclassify.dataimport.Fields;
 import javafx.util.Pair;
 import weka.core.Attribute;
@@ -10,13 +11,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by Miroslav Kramolinski
- *
  * This factory is used to supply a set of features, that would be then used in the feature vector
  */
 public class FeatureSetFactory {
     public static List<Pair<String, Attribute>> getStandardFeatureSet(Map<String, Set<Object>> dataDomain) {
-        BaseFeatureFactory factory = new BaseFeatureFactory(dataDomain);
+        BaseFeaturesFactory factory = new BaseFeaturesFactory(dataDomain);
+        ExtraFeaturesFactory extraFactory = new ExtraFeaturesFactory(dataDomain);
         List<Pair<String, Attribute>> featureVector = new ArrayList<>();
 
         featureVector.add(new Pair(Fields.GOLDEN.name(), factory.getGolden()));
@@ -35,8 +35,8 @@ public class FeatureSetFactory {
         featureVector.add(new Pair(Fields.RETWEET_COUNT.name(), factory.getRetweetsCount()));
         featureVector.add(new Pair(Fields.SIDEBAR_COLOR.name(), factory.getSidebarColor()));
         featureVector.add(new Pair(Fields.TWEET_TEXT.name(), factory.getText()));
-        featureVector.add(new Pair(Fields.TWEET_COORDINATES.name() + "_LATITUDE", factory.getTweetLatitude()));
-        featureVector.add(new Pair(Fields.TWEET_COORDINATES.name() + "_LONGITUDE", factory.getTweetLongitude()));
+        featureVector.add(new Pair(ExtraFields.TWEET_COORDINATES_LATITUDE.name(), extraFactory.getTweetLatitude()));
+        featureVector.add(new Pair(ExtraFields.TWEET_COORDINATES_LONGITUDE.name(), extraFactory.getTweetLongitude()));
         featureVector.add(new Pair(Fields.TWEETS_COUNT.name(), factory.getTweetsCount()));
         featureVector.add(new Pair(Fields.TWEET_LOCATION.name(), factory.getTweetLocation()));
         featureVector.add(new Pair(Fields.USER_TIMEZONE.name(), factory.getUserTimezone()));

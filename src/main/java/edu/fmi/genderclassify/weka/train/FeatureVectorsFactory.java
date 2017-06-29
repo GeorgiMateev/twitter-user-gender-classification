@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Miroslav Kramolinski
- *
  * Supplies feature vectors that are already filled with data and ready for action
  */
 public class FeatureVectorsFactory {

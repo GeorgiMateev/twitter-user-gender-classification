@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by Miroslav Kramolinski
- *
  * A place where we define methods for the different classifiers and variations
  * Each method should include the:
  *      - Shaping / retrieving of the appropriate feature vectors / instances
