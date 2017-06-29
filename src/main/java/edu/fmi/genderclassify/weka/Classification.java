@@ -55,7 +55,7 @@ public class Classification {
         System.out.print("\n\n\n");
     }
 
-    public static void runNaivBayes(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
+    public static void runNaiveBayes(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
         System.out.println("#####################  NAIVE BAYES  #####################");
 
         Instances instances = FeatureVectorsFactory.getStandardNonStringInstances(
@@ -86,6 +86,40 @@ public class Classification {
         test.testModel(model);
 
         System.out.println("#####################  END OF NAIVE BAYES  #####################");
+        System.out.print("\n\n\n");
+    }
+
+    public static void runSMO(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
+        System.out.println("#####################  SMO (SVM)  #####################");
+
+        Instances instances = FeatureVectorsFactory.getStandardNonStringInstances(
+                FeatureSetFactory.getStandardFeatureSet(dataDomain),
+                observations);
+
+        /*
+         * TRAIN
+         */
+        Classifier model = null;
+
+        int split = (int) (instances.size() * 0.7);
+        Instances trainSet = new Instances(instances, 0, split);
+        Train train = new Train(trainSet);
+
+        try {
+            model = train.getSMO();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        /*
+         * TEST
+         */
+        Instances testSet = new Instances(instances, split, instances.size() - split);
+        Test test = new Test(trainSet, testSet);
+        test.testModel(model);
+
+        System.out.println("#####################  END OF SMO (SVM)  #####################");
         System.out.print("\n\n\n");
     }
 }

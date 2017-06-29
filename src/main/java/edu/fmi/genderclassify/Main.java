@@ -26,6 +26,7 @@ public class Main {
          * Test classifiers
          */
         Classification.runJ48(dataDomain, observations);
-        Classification.runNaivBayes(dataDomain, observations);
+        Classification.runNaiveBayes(dataDomain, observations);
+        Classification.runSMO(dataDomain, observations);
     }
 }
