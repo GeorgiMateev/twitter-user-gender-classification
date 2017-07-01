@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/genderclassify.iml" filepath="$PROJECT_DIR$/genderclassify.iml" />
+      <module fileurl="file://$PROJECT_DIR$/notebooks/notebooks.iml" filepath="$PROJECT_DIR$/notebooks/notebooks.iml" />
     </modules>
   </component>
 </project>
