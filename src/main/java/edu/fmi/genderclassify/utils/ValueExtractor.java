@@ -2,6 +2,7 @@ package edu.fmi.genderclassify.utils;
 
 import edu.fmi.genderclassify.dataimport.ExtraFields;
 import edu.fmi.genderclassify.dataimport.Fields;
+import edu.fmi.genderclassify.dataimport.MaleFemaleWordsReader;
 import edu.fmi.genderclassify.entities.Observation;
 
 import java.util.HashMap;
@@ -110,7 +111,25 @@ public class ValueExtractor {
                 2000);
         }
 
+        if(fieldName.equalsIgnoreCase(ExtraFields.TWEET_MALE_FEMALE_WORDS_SCORE.name()))
+            return getMaleFemaleWordsScore(observation.getTweet().getText());
+
+        if(fieldName.equalsIgnoreCase(ExtraFields.DESCRIPTION_MALE_FEMALE_WORDS_SCORE.name()))
+            return getMaleFemaleWordsScore(observation.getUser().getProfile().getDescription());
+
         return null;
+    }
+
+    private static double getMaleFemaleWordsScore(String text) {
+        Map<String, Double> scores = MaleFemaleWordsReader.readMaleFemaleWordsScore();
+        String[] tokens = text.split(" ");
+        double score = 0;
+        for (String token: tokens) {
+            if (scores.containsKey(token.toLowerCase())) {
+                score += scores.get(token.toLowerCase());
+            }
+        }
+        return score;
     }
 
     public static String getStringValue(String fieldName, List<Observation> observations, int observationId) {
