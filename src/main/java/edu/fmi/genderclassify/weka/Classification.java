@@ -1,16 +1,12 @@
 package edu.fmi.genderclassify.weka;
 
 import edu.fmi.genderclassify.entities.Observation;
-import edu.fmi.genderclassify.weka.features.FeatureSetFactory;
 import edu.fmi.genderclassify.weka.test.Test;
-import edu.fmi.genderclassify.weka.train.FeatureVectorsFactory;
 import edu.fmi.genderclassify.weka.train.Train;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A place where we define methods for the different classifiers and variations
@@ -20,11 +16,8 @@ import java.util.Set;
  *      - Running the testing of the chosen model with the given tets set
  */
 public class Classification {
-    public static void runJ48(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
+    public static void runJ48(List<Observation> observations, Instances instances) {
         System.out.println("#####################  J48  #####################");
-        Instances instances = FeatureVectorsFactory.getStandardInstances(
-                FeatureSetFactory.getStandardFeatureSet(dataDomain),
-                observations);
 
         /*
          * TRAIN
@@ -53,19 +46,15 @@ public class Classification {
         System.out.print("\n\n\n");
     }
 
-    public static void runNaiveBayes(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
+    public static void runNaiveBayes(List<Observation> observations, Instances instances)  {
         System.out.println("#####################  NAIVE BAYES  #####################");
-
-        Instances instances = FeatureVectorsFactory.getStandardInstances(
-                FeatureSetFactory.getStandardFeatureSet(dataDomain),
-                observations);
 
         /*
          * TRAIN
          */
         Classifier model = null;
 
-        int split = (int) (instances.size() * 0.7);
+        int split = (int) (instances.size() * 0.8);
         Instances trainSet = new Instances(instances, 0, split);
         Train train = new Train(trainSet);
 
@@ -87,12 +76,8 @@ public class Classification {
         System.out.print("\n\n\n");
     }
 
-    public static void runSMO(Map<String, Set<Object>> dataDomain, List<Observation> observations) {
+    public static void runSMO(List<Observation> observations, Instances instances) {
         System.out.println("#####################  SMO (SVM)  #####################");
-
-        Instances instances = FeatureVectorsFactory.getStandardInstances(
-                FeatureSetFactory.getStandardFeatureSet(dataDomain),
-                observations);
 
         /*
          * TRAIN
@@ -118,6 +103,36 @@ public class Classification {
         test.testModel(model);
 
         System.out.println("#####################  END OF SMO (SVM)  #####################");
+        System.out.print("\n\n\n");
+    }
+
+    public static void runIBk(List<Observation> observations, Instances instances) {
+        System.out.println("#####################  IBk (kNN)  #####################");
+
+        /*
+         * TRAIN
+         */
+        Classifier model = null;
+
+        int split = (int) (instances.size() * 0.7);
+        Instances trainSet = new Instances(instances, 0, split);
+        Train train = new Train(trainSet);
+
+        try {
+            model = train.getIBk();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        /*
+         * TEST
+         */
+        Instances testSet = new Instances(instances, split, instances.size() - split);
+        Test test = new Test(trainSet, testSet);
+        test.testModel(model);
+
+        System.out.println("#####################  END OF IBk (kNN)  #####################");
         System.out.print("\n\n\n");
     }
 }

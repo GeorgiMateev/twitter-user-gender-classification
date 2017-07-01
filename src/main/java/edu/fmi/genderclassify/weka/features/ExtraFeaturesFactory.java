@@ -1,10 +1,14 @@
 package edu.fmi.genderclassify.weka.features;
 
 import edu.fmi.genderclassify.dataimport.ExtraFields;
+import edu.fmi.genderclassify.dataimport.Fields;
 import weka.core.Attribute;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A factory for creating Attribute instances for extra (custom) features
@@ -30,5 +34,49 @@ public class ExtraFeaturesFactory {
 
     public Attribute getDescriptionMaleFemaleWordsScore() {
         return new Attribute(ExtraFields.DESCRIPTION_MALE_FEMALE_WORDS_SCORE.name());
+    }
+
+    public Attribute getTweetTextPMIMale() {
+        return new Attribute(ExtraFields.TWEET_TEXT_PMI_MALE.name());
+    }
+
+    public Attribute getTweetTextPMIFemale() {
+        return new Attribute(ExtraFields.TWEET_TEXT_PMI_FEMALE.name());
+    }
+
+    public Attribute getTweetTextPMIBrand() {
+        return new Attribute(ExtraFields.TWEET_TEXT_PMI_BRAND.name());
+    }
+
+    public Attribute getTweetTextPMIUnknown() {
+        return new Attribute(ExtraFields.TWEET_TEXT_PMI_UNKNOWN.name());
+    }
+
+    public Attribute getTweetTextGenderPrediction() {
+        return new Attribute(
+                ExtraFields.TWEET_TEXT_GENDER_PREDICT.name(),
+                new ArrayList<>(dataDomain.get(Fields.GENDER.name()).stream().map(obj -> (String) obj).collect(Collectors.toList())));
+    }
+
+    public Attribute getUserDescriptionPMIMale() {
+        return new Attribute(ExtraFields.USER_DESC_PMI_MALE.name());
+    }
+
+    public Attribute getUserDescriptionPMIFemale() {
+        return new Attribute(ExtraFields.USER_DESC_PMI_FEMALE.name());
+    }
+
+    public Attribute getUserDescriptionPMIBrand() {
+        return new Attribute(ExtraFields.USER_DESC_PMI_BRAND.name());
+    }
+
+    public Attribute getUserDescriptionPMIUnknown() {
+        return new Attribute(ExtraFields.USER_DESC_PMI_UNKNOWN.name());
+    }
+
+    public Attribute getUserDescriptionGenderPrediction() {
+        return new Attribute(
+                ExtraFields.USER_DESC_GENDER_PREDICT.name(),
+                new ArrayList<>(dataDomain.get(Fields.GENDER.name()).stream().map(obj -> (String) obj).collect(Collectors.toList())));
     }
 }

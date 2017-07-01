@@ -5,9 +5,11 @@ import edu.fmi.genderclassify.dataimport.Fields;
 import edu.fmi.genderclassify.dataimport.MaleFemaleWordsReader;
 import edu.fmi.genderclassify.entities.Observation;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -15,6 +17,9 @@ import java.util.stream.Collectors;
  */
 public class ValueExtractor {
     private static Map<String, List<Double>> fieldsValuesCache = new HashMap<>(); // spare some stream operations
+    private static Map<String, Map<String, Integer>> termFreqCache = new HashMap<>(); // cache of the tf for each gender
+    private static Map<String, Double> probs = new HashMap<>(); // cache of the probability of the user being of given gender
+    private static Map<String, Map<String, Double>> pmiCache = new HashMap<>(); // cache the found PMI values per gender
 
     public static Double getDoubleValue(String fieldName, List<Observation> observations, int observationId) {
         Observation observation = observations.get(observationId);
@@ -178,5 +183,116 @@ public class ValueExtractor {
             return Conversion.getValueAsStr(observation.getUser().getTimezone());
 
         return null;
+    }
+
+    public static String getGenderPredictionBasedOnPMI(String fieldName, List<Observation> observations, int observationId) {
+        if(fieldName.equalsIgnoreCase(ExtraFields.TWEET_TEXT_GENDER_PREDICT.name())) {
+            Double pmiMale = getPMIValue(ExtraFields.TWEET_TEXT_PMI_MALE.name(), observations, observationId);
+            Double pmiFemale = getPMIValue(ExtraFields.TWEET_TEXT_PMI_FEMALE.name(), observations, observationId);
+            Double pmiBrand = getPMIValue(ExtraFields.TWEET_TEXT_PMI_BRAND.name(), observations, observationId);
+            Double pmiUnknown = getPMIValue(ExtraFields.TWEET_TEXT_PMI_UNKNOWN.name(), observations, observationId);
+
+            return getBestScoringGender(pmiMale, pmiFemale,pmiBrand, pmiUnknown);
+        } else if(fieldName.equalsIgnoreCase(ExtraFields.USER_DESC_GENDER_PREDICT.name())) {
+            Double pmiMale = getPMIValue(ExtraFields.USER_DESC_PMI_MALE.name(), observations, observationId);
+            Double pmiFemale = getPMIValue(ExtraFields.USER_DESC_PMI_FEMALE.name(), observations, observationId);
+            Double pmiBrand = getPMIValue(ExtraFields.USER_DESC_PMI_BRAND.name(), observations, observationId);
+            Double pmiUnknown = getPMIValue(ExtraFields.USER_DESC_PMI_UNKNOWN.name(), observations, observationId);
+
+            return getBestScoringGender(pmiMale, pmiFemale,pmiBrand, pmiUnknown);
+        } else {
+            throw new IllegalArgumentException("Unable to predict gender from: " + fieldName);
+        }
+    }
+
+    private static String getBestScoringGender(Double pmiMale, Double pmiFemale, Double pmiBrand, Double pmiUnknown) {
+        if(pmiMale >= pmiFemale && pmiMale >= pmiBrand && pmiMale >= pmiUnknown)
+            return "male";
+        else if(pmiFemale >= pmiMale && pmiFemale >= pmiBrand && pmiFemale >= pmiUnknown)
+            return "female";
+        else if(pmiBrand >= pmiMale && pmiBrand >= pmiFemale && pmiBrand >= pmiUnknown)
+            return "brand";
+        else
+            return "unknown";
+    }
+
+    public static Double getPMIValue(String fieldName, List<Observation> observations, int observationId) {
+        if(fieldName.equalsIgnoreCase(ExtraFields.TWEET_TEXT_PMI_MALE.name()))
+            return getPMIOfTextByGender(observations, observationId, obs -> obs.getTweet().getText(), "male");
+
+        if(fieldName.equalsIgnoreCase(ExtraFields.TWEET_TEXT_PMI_FEMALE.name()))
+            return getPMIOfTextByGender(observations, observationId, obs -> obs.getTweet().getText(), "female");
+
+        if(fieldName.equalsIgnoreCase(ExtraFields.TWEET_TEXT_PMI_BRAND.name()))
+            return getPMIOfTextByGender(observations, observationId, obs -> obs.getTweet().getText(), "brand");
+
+        if(fieldName.equalsIgnoreCase(ExtraFields.TWEET_TEXT_PMI_UNKNOWN.name()))
+            return getPMIOfTextByGender(observations, observationId, obs -> obs.getTweet().getText(), "unknown");
+
+        if(fieldName.equalsIgnoreCase(ExtraFields.USER_DESC_PMI_MALE.name()))
+            return getPMIOfTextByGender(observations, observationId, obs -> obs.getUser().getProfile().getDescription(), "male");
+
+        if(fieldName.equalsIgnoreCase(ExtraFields.USER_DESC_PMI_FEMALE.name()))
+            return getPMIOfTextByGender(observations, observationId, obs -> obs.getUser().getProfile().getDescription(), "female");
+
+        if(fieldName.equalsIgnoreCase(ExtraFields.USER_DESC_PMI_BRAND.name()))
+            return getPMIOfTextByGender(observations, observationId, obs -> obs.getUser().getProfile().getDescription(), "brand");
+
+        if(fieldName.equalsIgnoreCase(ExtraFields.USER_DESC_PMI_UNKNOWN.name()))
+            return getPMIOfTextByGender(observations, observationId, obs -> obs.getUser().getProfile().getDescription(), "unknown");
+
+        return null;
+    }
+
+    private static Double getPMIOfTextByGender(
+            List<Observation> observations,
+            int observationId,
+            Function<Observation, String> extractor,
+            String gender) {
+
+        if(!termFreqCache.containsKey(gender)) {
+            termFreqCache.put(
+                    gender,
+                    calculateTf(FeatureExtractorUtils.getTextForSubject(
+                        observations,
+                        obs -> obs.getUser().getGender().equalsIgnoreCase(gender),
+                        extractor)));
+        }
+
+        if(!termFreqCache.containsKey("all")) {
+            termFreqCache.put(
+                    "all",
+                    calculateTf(FeatureExtractorUtils.getTextForSubject(observations, obs -> true, extractor)));
+        }
+
+        if(!probs.containsKey(gender))
+            probs.put(
+                gender,
+                new Double(observations.stream().filter(obs -> obs.getUser().getGender().equalsIgnoreCase(gender)).count()) / new Double(observations.size()));
+
+        return Arrays.stream(extractor.apply(observations.get(observationId))
+                .split(" "))
+                .map(word -> {
+                    if(!pmiCache.containsKey(gender))
+                        pmiCache.put(gender, new HashMap<>());
+
+                    if(!pmiCache.get(gender).containsKey(word))
+                        pmiCache.get(gender).put(word, FeatureExtractorUtils.getPMI(word, termFreqCache.get(gender), termFreqCache.get("all"), probs.get(gender)));
+
+                    return pmiCache.get(gender).get(word);
+                })
+                .reduce((x, y) -> x + y)
+                .get();
+    }
+
+    private static Map<String, Integer> calculateTf(String text) {
+        Map<String, Integer> tf = new HashMap<>();
+        for(String word: text.split(" "))
+            if(!tf.containsKey(word))
+                tf.put(word, 1);
+            else
+                tf.put(word, tf.get(word) + 1);
+
+        return tf;
     }
 }

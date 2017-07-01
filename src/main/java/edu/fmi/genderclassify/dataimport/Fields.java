@@ -1,5 +1,7 @@
 package edu.fmi.genderclassify.dataimport;
 
+import java.util.Arrays;
+
 public enum Fields {
     USER_ID("_unit_id"),
     GOLDEN("_golden"),
@@ -36,5 +38,9 @@ public enum Fields {
 
     public String getHeaderName() {
         return headerName;
+    }
+
+    public static boolean contains(String field) {
+        return Arrays.stream(values()).filter(value -> value.name().equalsIgnoreCase(field)).count() == 1;
     }
 }
