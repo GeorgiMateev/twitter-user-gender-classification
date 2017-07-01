@@ -3,8 +3,8 @@ import numpy as np
 import os
 import time
 import datetime
-from notebooks import data_helpers
-from notebooks import text_cnn
+import data_helpers
+import text_cnn
 from tensorflow.contrib import learn
 
 # Parameters

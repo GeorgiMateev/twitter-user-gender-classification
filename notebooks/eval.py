@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import os
-from notebooks import data_helpers
+import data_helpers
 from tensorflow.contrib import learn
 import csv
 from sklearn import metrics
