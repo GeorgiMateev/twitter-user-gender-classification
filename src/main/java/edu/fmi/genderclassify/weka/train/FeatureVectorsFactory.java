@@ -3,6 +3,7 @@ package edu.fmi.genderclassify.weka.train;
 import edu.fmi.genderclassify.dataimport.ExtraFields;
 import edu.fmi.genderclassify.dataimport.Fields;
 import edu.fmi.genderclassify.entities.Observation;
+import edu.fmi.genderclassify.utils.NameTools;
 import edu.fmi.genderclassify.utils.ValueExtractor;
 import javafx.util.Pair;
 import weka.core.Attribute;
@@ -42,7 +43,7 @@ public class FeatureVectorsFactory {
             trainingSet.add(instance);
         }
 
-        trainingSet.setClassIndex(attributes.size() - 1);
+        trainingSet.setClassIndex(attributes.stream().map(pair -> pair.getKey()).collect(Collectors.toList()).indexOf(Fields.GENDER.name()));
 
         return trainingSet;
     }
@@ -77,7 +78,15 @@ public class FeatureVectorsFactory {
             else if(attributePair.getKey().equalsIgnoreCase(ExtraFields.TWEET_TEXT_GENDER_PREDICT.name())
                     || attributePair.getKey().equalsIgnoreCase(ExtraFields.USER_DESC_GENDER_PREDICT.name()))
                 instance.setValue(attributePair.getValue(), ValueExtractor.getGenderPredictionBasedOnPMI(attributePair.getKey(), observations, currentObservation));
-            else
+            else if(attributePair.getKey().equalsIgnoreCase(ExtraFields.FIRST_NAME_FROM_USERNAME_BASED_GENDER_PREDICT.name())) {
+                String name = NameTools.checkGenderFromRestnames(NameTools.getFirstNameFromUsername(observations.get(currentObservation).getUser().getUsername()));
+                if(name == null || name.equalsIgnoreCase("unisex"))
+                    name = "unknown";
+
+                instance.setValue(
+                        attributePair.getValue(),
+                        name);
+            } else
                 throw new IllegalArgumentException("No valid way to update instance for field: " + attributePair.getKey());
         } else {
             throw new IllegalArgumentException("Unknown field: " + attributePair.getKey());

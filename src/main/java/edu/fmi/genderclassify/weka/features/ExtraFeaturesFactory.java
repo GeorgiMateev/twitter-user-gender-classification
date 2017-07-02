@@ -5,7 +5,6 @@ import edu.fmi.genderclassify.dataimport.Fields;
 import weka.core.Attribute;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,6 +76,12 @@ public class ExtraFeaturesFactory {
     public Attribute getUserDescriptionGenderPrediction() {
         return new Attribute(
                 ExtraFields.USER_DESC_GENDER_PREDICT.name(),
+                new ArrayList<>(dataDomain.get(Fields.GENDER.name()).stream().map(obj -> (String) obj).collect(Collectors.toList())));
+    }
+
+    public Attribute getFirstNameFromUserNameBasedGenderPrediction() {
+        return new Attribute(
+                ExtraFields.FIRST_NAME_FROM_USERNAME_BASED_GENDER_PREDICT.name(),
                 new ArrayList<>(dataDomain.get(Fields.GENDER.name()).stream().map(obj -> (String) obj).collect(Collectors.toList())));
     }
 }

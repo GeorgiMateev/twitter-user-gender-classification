@@ -19,7 +19,9 @@ public enum ExtraFields {
     USER_DESC_PMI_FEMALE,
     USER_DESC_PMI_BRAND,
     USER_DESC_PMI_UNKNOWN,
-    USER_DESC_GENDER_PREDICT;
+    USER_DESC_GENDER_PREDICT,
+
+    FIRST_NAME_FROM_USERNAME_BASED_GENDER_PREDICT;
 
     public static boolean contains(String field) {
         return Arrays.stream(values()).filter(value -> value.name().equalsIgnoreCase(field)).count() == 1;
